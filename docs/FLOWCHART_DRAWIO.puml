@@ -1,0 +1,291 @@
+@startuml VibraMeet Application Flow
+
+title VibraMeet - Complete Application Flowchart
+
+skinparam backgroundColor #ffffff
+skinparam arrowColor #333333
+skinparam classBackgroundColor #f0f0f0
+skinparam classBorderColor #333333
+
+' ==================== USER ENTRY ====================
+start
+
+:User Visits Application;
+note right : http://localhost:5173
+
+if (User Logged In?) then (No)
+  :Show Login Page;
+  :User Enters Credentials;
+  :POST /api/auth/login;
+  
+  if (Valid?) then (Yes)
+    :Create JWT Token;
+    :Store in localStorage;
+    :Redirect to Home;
+  else (No)
+    :Show Error Message;
+    end
+  endif
+else (Yes)
+  :Load User Profile;
+  :Check User Role;
+endif
+
+' ==================== ROLE-BASED NAVIGATION ====================
+if (User Role?) then (SUPER_ADMIN)
+  :Show Admin Dashboard;
+  :Full System Control;
+  :User Management Panel;
+  :All Events Visible;
+  :Sponsor/Client Management;
+else if (ADMIN) then
+  :Show Admin Dashboard;
+  :Event Management (Own);
+  :Registration Management;
+  :Space Management;
+else
+  :Show User Dashboard;
+  :Browse Events;
+  :My Registrations;
+  :Profile Management;
+endif
+
+' ==================== MAIN PAGES ====================
+:User Selects Feature;
+
+if (Feature?) then (Events)
+  :GET /api/events;
+  :Display Event List/Grid;
+  :Apply Filters:
+  :  - Category;
+  :  - Status;
+  :  - Date Range;
+  :  - Search Text;
+else if (My Registrations) then
+  :GET /api/registrations/my;
+  :Show Registrations;
+  :Display: Confirmed/Pending/Waitlisted;
+else if (Payments) then
+  :GET /api/users/{id}/payments;
+  :Show Payment History;
+  :Filter by Status/Type;
+else if (Profile) then
+  :GET /api/users/me;
+  :Show Profile Data;
+  :Option to Upload Photo;
+else if (Statistics) then
+  if (Role?) then (ADMIN+)
+    :GET /api/stats/dashboard;
+    :Show System Dashboard;
+  else
+    :GET /api/stats/my;
+    :Show Personal Stats;
+  endif
+else if (Admin Panel) then
+  :Check if Admin;
+  if (Is Admin?) then (Yes)
+    :Show Invite Users Form;
+    :Show User Management;
+    :Show Role Changes;
+  else (No)
+    :Redirect to Home;
+  endif
+endif
+
+' ==================== EVENT DETAIL FLOW ====================
+if (User Clicks Event?) then (Yes)
+  :GET /api/events/:id;
+  :Display Event Details;
+  :Show: Description, Date, Location, Price;
+  :Show Current Registrations Count;
+  :Show Max Players;
+  :Calculate Available Spots;
+  
+  :User Clicks "Register";
+  
+  if (Event Full?) then (No)
+    :Create Registration;
+    :POST /api/registrations/event/:id;
+    :Set Status: PENDING;
+    :Show Confirmation;
+  else (Yes - Waitlist)
+    :Create Registration;
+    :POST /api/registrations/event/:id;
+    :Set Status: WAITLISTED;
+    :Show Waitlist Position;
+    note right : Smart waitlist:\n1. Most active users first\n2. Then by arrival time
+  endif
+  
+  if (Event Has Price?) then (Yes)
+    :Redirect to Payments;
+    :POST /api/payments;
+    :Payment Type Selection:
+    :  - FULL: 100%;
+    :  - ADVANCE: 50%;
+    :  - CUSTOM: Negotiable;
+  else (Free)
+    :Registration Complete;
+  endif
+else
+  :Continue Browsing;
+endif
+
+' ==================== ADMIN EVENT MANAGEMENT ====================
+if (Admin Creates Event?) then (Yes)
+  :Show Event Form;
+  :Select: Type (PUBLIC/PRIVATE), Category;
+  :POST /api/events;
+  :Event Status: DRAFT;
+  
+  :Admin Publishes Event;
+  :PATCH /api/events/:id;
+  :Event Status: ACTIVE;
+  
+  if (Event Date Passed?) then (Yes)
+    :Auto-Archive Event;
+    :PATCH /api/events/:id;
+    :Event Status: ARCHIVED;
+    :Admin Notified;
+  else (No)
+    :Event Remains ACTIVE;
+  endif
+  
+  if (Admin Cancels?) then (Yes)
+    :PATCH /api/events/:id/cancel;
+    :Event Status: CANCELLED;
+    :Notify All Registered Users;
+    :Refund Payments (if applicable);
+  else (No)
+    :Continue Event Lifecycle;
+  endif
+else
+  :Skip Admin Functions;
+endif
+
+' ==================== REGISTRATION MANAGEMENT ====================
+:Admin Reviews Registrations;
+:GET /api/registrations/event/:id;
+
+if (Status to Update?) then (Confirm)
+  :PATCH /api/registrations/:id/status;
+  :Set: CONFIRMED;
+  :User Notified;
+else if (Reject) then
+  :PATCH /api/registrations/:id/status;
+  :Set: REJECTED;
+  :If Waitlisted Users:
+    :Promote Best Waitlisted;
+    :Set: PENDING;
+    :Auto-Notify Promoted User;
+  endif
+else if (Waitlist) then
+  :User on Waitlist;
+  :Wait for Spot;
+endif
+
+' ==================== PAYMENT FLOW ====================
+:Payment Processing;
+
+if (Payment Status?) then (Completed)
+  :Create/Update Payment Record;
+  :POST /api/payments;
+  :Generate Reference Number;
+  :Send Confirmation Email;
+  :User Can Attend Event;
+else if (Pending) then
+  :Payment Awaiting;
+  :Show Payment Reminder;
+  :Option to Pay;
+  :Remind After Days;
+else
+  :Payment Failed;
+  :Show Retry Option;
+endif
+
+' ==================== NOTIFICATIONS ====================
+:Real-time Notifications;
+
+:notification Types:
+:- Event Created;
+:- Registration Status Changed;
+:- Waitlist Promotion;
+:- Payment Confirmation;
+:- Event Cancelled;
+:- Penalty Applied;
+
+:POST /api/notifications;
+:Store in DB;
+:Send WebSocket to User;
+:Show Bell Icon Badge;
+
+' ==================== PENALTIES & RESTRICTIONS ====================
+if (No-Show or Violation?) then (Yes)
+  :Admin Reports Penalty;
+  :POST /api/penalties;
+  :Type: NO_SHOW, VIOLATION, etc;
+  :Set Expiration Date;
+  
+  :User Penalized;
+  :Cannot Register to Events;
+  :penalizedUntil set in Database;
+  
+  if (Penalty Expired?) then (Yes)
+    :Auto-Remove Penalty;
+    :User Can Register Again;
+  else (No)
+    :Remain Restricted;
+  endif
+else (No)
+  :User Can Register;
+endif
+
+' ==================== STATISTICS & ANALYTICS ====================
+:Generate Statistics;
+
+:Personal Stats:
+:- Events Attended;
+:- Total Paid;
+:- Penalties;
+:- Registrations;
+
+:Admin Dashboard:
+:- Total Users;
+:- Active Events;
+:- Revenue;
+:- Participation Rate;
+
+:GET /api/stats/my;
+:GET /api/stats/dashboard;
+:GET /api/stats/event/:id;
+
+' ==================== REQUEST MANAGEMENT ====================
+if (User Creates Request?) then (Yes)
+  :POST /api/requests;
+  :Type: PQRS (Petition, Complaint, etc);
+  :Priority Level;
+  :Description & Details;
+  
+  :Admin Reviews Request;
+  :PATCH /api/requests/:id/status;
+  :Status Transition:
+  :  PENDING → REVIEWED → ASSIGNED → RESOLVED → CLOSED;
+else
+  :Skip Request Flow;
+endif
+
+' ==================== FINAL STATES ====================
+:User Session Active;
+
+if (User Logs Out?) then (Yes)
+  :Clear JWT Token;
+  :localStorage.removeItem('token');
+  :Redirect to Login;
+  end
+else (Keep Using)
+  :Refresh Data;
+  :Check Notifications;
+endif
+
+stop
+
+@enduml

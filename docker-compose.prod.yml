@@ -1,0 +1,43 @@
+# Producción local (detrás de Cloudflare Tunnel).
+# Uso: docker-compose -p eventos-prod -f docker-compose.prod.yml up --build -d
+# Secretos en .env.prod (no versionado).
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file: .env.prod
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    env_file: .env.prod
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads_prod:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      # Solo accesible desde este Mac; el túnel de Cloudflare lo expone
+      - "127.0.0.1:8082:80"
+
+volumes:
+  pgdata_prod:
+  uploads_prod:

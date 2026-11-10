@@ -1,0 +1,136 @@
+@startuml VibraMeet API & System Flow
+
+title VibraMeet - API & System Component Diagram
+
+skinparam backgroundColor #f0f0f0
+skinparam componentBackgroundColor #b3e5fc
+skinparam componentBorderColor #0277bd
+
+package "Frontend (React 19 + Vite)" {
+  component [React Router] as Router
+  component [Auth Context] as AuthCtx
+  component [Event Pages] as EventPages
+  component [Registration UI] as RegUI
+  component [Payment UI] as PayUI
+  component [Admin Dashboard] as AdminDash
+  component [Stats Dashboard] as StatsDash
+  component [Notification Bell] as NotifBell
+}
+
+package "Backend (Node.js + Express)" {
+  component [JWT Auth Middleware] as JWTAuth
+  component [Auth Routes] as AuthRoutes
+  component [Event Routes] as EventRoutes
+  component [Registration Routes] as RegRoutes
+  component [Payment Routes] as PaymentRoutes
+  component [User Routes] as UserRoutes
+  component [Stats Routes] as StatsRoutes
+  component [Request Routes] as ReqRoutes
+  component [Notification Routes] as NotifRoutes
+  component [Penalty Logic] as PenaltyLogic
+  component [Waitlist Manager] as WaitlistMgr
+}
+
+package "Data Layer (Prisma ORM)" {
+  component [Prisma Client] as PrismaClient
+  component [Query Builder] as QueryBuilder
+  component [Migration Engine] as MigrationEngine
+}
+
+package "Database (PostgreSQL)" {
+  database [PostgreSQL 16] as DB
+  component [Users Table] as UsersTable
+  component [Events Table] as EventsTable
+  component [Registrations Table] as RegTable
+  component [Payments Table] as PayTable
+  component [Penalties Table] as PenTable
+  component [Notifications Table] as NotifTable
+  component [Requests Table] as ReqTable
+  component [Spaces Table] as SpaceTable
+}
+
+package "External Services" {
+  component [JWT Token Service] as JWTService
+  component [Bcrypt Hash Service] as BcryptService
+  component [Email Notification] as EmailService
+  component [WebSocket (Real-time)] as WebSocket
+  component [File Upload (Multer)] as FileUpload
+}
+
+' ==================== FRONTEND CONNECTIONS ====================
+
+Router --> AuthCtx : manage auth state
+Router --> EventPages : route to events
+Router --> RegUI : route to registrations
+Router --> PayUI : route to payments
+Router --> AdminDash : route to admin
+Router --> StatsDash : route to stats
+EventPages --> NotifBell : display notifications
+
+' ==================== API CALLS ====================
+
+AuthCtx --> AuthRoutes : login/register
+EventPages --> EventRoutes : GET/POST/PUT/DELETE events
+RegUI --> RegRoutes : POST/DELETE registrations
+PayUI --> PaymentRoutes : POST payments
+AdminDash --> UserRoutes : PATCH roles
+AdminDash --> EventRoutes : manage own events
+StatsDash --> StatsRoutes : GET statistics
+NotifBell --> NotifRoutes : GET notifications
+EventPages --> RegRoutes : check registration status
+
+' ==================== MIDDLEWARE ====================
+
+AuthRoutes --> JWTAuth : validate token
+EventRoutes --> JWTAuth : validate token
+RegRoutes --> JWTAuth : validate token
+PaymentRoutes --> JWTAuth : validate token
+UserRoutes --> JWTAuth : validate token
+StatsRoutes --> JWTAuth : validate token
+
+' ==================== BUSINESS LOGIC ====================
+
+RegRoutes --> WaitlistMgr : manage waitlist
+RegRoutes --> PenaltyLogic : check penalties
+EventRoutes --> PenaltyLogic : apply penalties
+EventRoutes --> NotifRoutes : send notifications
+WaitlistMgr --> NotifRoutes : notify promotion
+PaymentRoutes --> NotifRoutes : notify payment
+
+' ==================== EXTERNAL SERVICES ====================
+
+AuthRoutes --> JWTService : sign/verify tokens
+AuthRoutes --> BcryptService : hash passwords
+NotifRoutes --> EmailService : send emails
+NotifRoutes --> WebSocket : real-time updates
+UserRoutes --> FileUpload : upload photos
+
+' ==================== PRISMA CONNECTIONS ====================
+
+JWTAuth --> PrismaClient : query users
+AuthRoutes --> PrismaClient : create/update users
+EventRoutes --> PrismaClient : CRUD events
+RegRoutes --> PrismaClient : CRUD registrations
+PaymentRoutes --> PrismaClient : CRUD payments
+UserRoutes --> PrismaClient : update users
+StatsRoutes --> PrismaClient : aggregate data
+ReqRoutes --> PrismaClient : CRUD requests
+NotifRoutes --> PrismaClient : CRUD notifications
+PenaltyLogic --> PrismaClient : CRUD penalties
+
+' ==================== DATABASE LAYER ====================
+
+PrismaClient --> QueryBuilder : build queries
+QueryBuilder --> MigrationEngine : run migrations
+MigrationEngine --> DB : sync schema
+
+DB --> UsersTable : store users
+DB --> EventsTable : store events
+DB --> RegTable : store registrations
+DB --> PayTable : store payments
+DB --> PenTable : store penalties
+DB --> NotifTable : store notifications
+DB --> ReqTable : store requests
+DB --> SpaceTable : store spaces
+
+@enduml

@@ -1,0 +1,436 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id                 Int            @id @default(autoincrement())
+  email              String         @unique
+  password           String
+  name               String
+  phone              String?
+  address            String?
+  photo              String?
+  emergencyContact   String?        @map("emergency_contact")
+  role               Role           @default(USER)
+  penalizedUntil     DateTime?      @map("penalized_until")
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
+
+  createdEvents      Event[]        @relation("EventCreator")
+  registrations      Registration[]
+  payments           Payment[]
+  ownerships         Ownership[]
+  requests           Request[]        @relation("RequestCreator")
+  assignedRequests   Request[]        @relation("RequestAssignee")
+  penalties          Penalty[]
+  notifications      Notification[]
+  spaceAdmins        SpaceAdmin[]
+  groupMemberships   UserGroupMember[]
+  eventInvitations   EventInvitation[]
+  eventTypeRequests  EventTypeRequest[]
+
+  @@map("users")
+}
+
+enum EventType {
+  PUBLIC
+  PRIVATE
+}
+
+enum EventCategory {
+  FUTBOL
+  BASKETBALL
+  BAILE
+  BOLOS
+  REUNION
+  OTRO
+}
+
+enum EventStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  ARCHIVED
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  CANCELLED
+  WAITLISTED
+}
+
+model Event {
+  id            Int           @id @default(autoincrement())
+  name          String
+  description   String?
+  type          EventType     @default(PUBLIC)
+  category      EventCategory @default(FUTBOL)
+  status        EventStatus   @default(DRAFT)
+  date          DateTime
+  endDate       DateTime?     @map("end_date")
+  location      String
+  latitude      Float?
+  longitude     Float?
+  maxPlayers    Int           @map("max_players")
+  price         Decimal       @default(0) @db.Decimal(10, 2)
+  image         String?
+  creatorId     Int           @map("creator_id")
+  spaceId       Int?          @map("space_id")
+  archivedBy    Int?          @map("archived_by")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  creator       User          @relation("EventCreator", fields: [creatorId], references: [id])
+  space         Space?        @relation(fields: [spaceId], references: [id])
+  registrations Registration[]
+  invitations   EventInvitation[]
+  payments      Payment[]
+  ownerships    Ownership[]
+  requests      Request[]
+  penalties     Penalty[]
+  sponsors      EventSponsor[]
+
+  @@map("events")
+}
+
+model EventInvitation {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  eventId   Int      @map("event_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@map("event_invitations")
+}
+
+model EventTemplate {
+  id            Int           @id @default(autoincrement())
+  name          String
+  description   String?
+  type          EventType     @default(PUBLIC)
+  category      EventCategory @default(FUTBOL)
+  location      String?
+  latitude      Float?
+  longitude     Float?
+  maxPlayers    Int           @default(10) @map("max_players")
+  price         Decimal       @default(0) @db.Decimal(10, 2)
+  creatorId     Int           @map("creator_id")
+  spaceId       Int?          @map("space_id")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  space         Space?        @relation(fields: [spaceId], references: [id])
+
+  @@map("event_templates")
+}
+
+model Registration {
+  id        Int                @id @default(autoincrement())
+  userId    Int                @map("user_id")
+  eventId   Int                @map("event_id")
+  status    RegistrationStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  user      User               @relation(fields: [userId], references: [id])
+  event     Event              @relation(fields: [eventId], references: [id])
+  payments  Payment[]
+
+  @@unique([userId, eventId])
+  @@map("registrations")
+}
+
+// ==================== FASE 3: Pagos + Titularidad ====================
+
+enum PaymentType {
+  ADVANCE
+  CUSTOM
+  FULL
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+}
+
+model Payment {
+  id               Int            @id @default(autoincrement())
+  userId           Int            @map("user_id")
+  eventId          Int            @map("event_id")
+  registrationId   Int            @map("registration_id")
+  amount           Decimal        @db.Decimal(10, 2)
+  type             PaymentType    @default(FULL)
+  status           PaymentStatus  @default(PENDING)
+  reference        String?
+  notes            String?
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  user             User           @relation(fields: [userId], references: [id])
+  event            Event          @relation(fields: [eventId], references: [id])
+  registration     Registration   @relation(fields: [registrationId], references: [id])
+
+  @@map("payments")
+}
+
+enum OwnershipType {
+  TITULAR
+  SUPLENTE
+}
+
+model Ownership {
+  id        Int            @id @default(autoincrement())
+  userId    Int            @map("user_id")
+  eventId   Int            @map("event_id")
+  type      OwnershipType  @default(TITULAR)
+  position  String?
+  number    Int?
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+
+  user      User           @relation(fields: [userId], references: [id])
+  event     Event          @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+  @@map("ownerships")
+}
+
+// ==================== FASE 4: Solicitudes ====================
+
+enum RequestType {
+  GENERAL
+  COMPLAINT
+  SUGGESTION
+  CHANGE
+}
+
+enum RequestStatus {
+  OPEN
+  IN_PROGRESS
+  ESCALATED
+  RESOLVED
+  CLOSED
+}
+
+enum RequestPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Request {
+  id           Int             @id @default(autoincrement())
+  title        String
+  description  String
+  type         RequestType     @default(GENERAL)
+  status       RequestStatus   @default(OPEN)
+  priority     RequestPriority @default(MEDIUM)
+  eventId      Int?            @map("event_id")
+  creatorId    Int             @map("creator_id")
+  assigneeId   Int?            @map("assignee_id")
+  response     String?
+  resolvedAt   DateTime?       @map("resolved_at")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  event        Event?          @relation(fields: [eventId], references: [id])
+  creator      User            @relation("RequestCreator", fields: [creatorId], references: [id])
+  assignee     User?           @relation("RequestAssignee", fields: [assigneeId], references: [id])
+
+  @@map("requests")
+}
+
+// ==================== FASE 5: Penalidades ====================
+
+enum PenaltyType {
+  YELLOW_CARD
+  RED_CARD
+  SUSPENSION
+  FINE
+  WARNING
+  NO_SHOW
+}
+
+model Penalty {
+  id          Int         @id @default(autoincrement())
+  userId      Int         @map("user_id")
+  eventId     Int         @map("event_id")
+  type        PenaltyType
+  reason      String
+  amount      Decimal?    @db.Decimal(10, 2)
+  active      Boolean     @default(true)
+  expiresAt   DateTime?   @map("expires_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  user        User        @relation(fields: [userId], references: [id])
+  event       Event       @relation(fields: [eventId], references: [id])
+
+  @@map("penalties")
+}
+
+// ==================== FASE 6: Patrocinadores/Clientes ====================
+
+model Sponsor {
+  id          Int            @id @default(autoincrement())
+  name        String
+  contactName String?        @map("contact_name")
+  email       String?
+  phone       String?
+  logo        String?
+  website     String?
+  active      Boolean        @default(true)
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  events      EventSponsor[]
+
+  @@map("sponsors")
+}
+
+model EventSponsor {
+  id          Int      @id @default(autoincrement())
+  eventId     Int      @map("event_id")
+  sponsorId   Int      @map("sponsor_id")
+  contribution Decimal? @db.Decimal(10, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  event       Event    @relation(fields: [eventId], references: [id])
+  sponsor     Sponsor  @relation(fields: [sponsorId], references: [id])
+
+  @@unique([eventId, sponsorId])
+  @@map("event_sponsors")
+}
+
+model Client {
+  id          Int      @id @default(autoincrement())
+  name        String
+  company     String?
+  email       String?
+  phone       String?
+  address     String?
+  notes       String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("clients")
+}
+
+// ==================== FASE 9: Espacios Admin, Grupos, Solicitudes Nuevos Eventos ====================
+
+model Space {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  category    EventCategory @default(OTRO)
+  isPublic    Boolean       @default(true) @map("is_public")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  admins      SpaceAdmin[]
+  events      Event[]
+  templates   EventTemplate[]
+
+  @@map("spaces")
+}
+
+model SpaceAdmin {
+  id        Int      @id @default(autoincrement())
+  spaceId   Int      @map("space_id")
+  adminId   Int      @map("admin_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  admin     User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@unique([spaceId, adminId])
+  @@map("space_admins")
+}
+
+model UserGroup {
+  id          Int              @id @default(autoincrement())
+  name        String
+  description String?
+  adminId     Int              @map("admin_id")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+  members     UserGroupMember[]
+  @@map("user_groups")
+}
+
+model UserGroupMember {
+  id        Int      @id @default(autoincrement())
+  groupId   Int      @map("group_id")
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  group     UserGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([groupId, userId])
+  @@map("user_group_members")
+}
+
+enum EventTypeRequestStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+model EventTypeRequest {
+  id             Int                    @id @default(autoincrement())
+  requesterId    Int                    @map("requester_id")
+  categoryName   String                 @map("category_name")
+  description    String
+  justification  String
+  status         EventTypeRequestStatus @default(PENDING)
+  adminResponse  String?                @map("admin_response")
+  resolvedAt     DateTime?              @map("resolved_at")
+  createdAt      DateTime               @default(now()) @map("created_at")
+  updatedAt      DateTime               @updatedAt @map("updated_at")
+  requester      User                   @relation(fields: [requesterId], references: [id])
+  @@map("event_type_requests")
+}
+
+// ==================== FASE 7: Notificaciones ====================
+
+enum NotificationType {
+  INFO
+  WARNING
+  SUCCESS
+  ERROR
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int              @map("user_id")
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  read      Boolean          @default(false)
+  link      String?
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user      User             @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}

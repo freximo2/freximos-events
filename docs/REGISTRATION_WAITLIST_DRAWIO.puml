@@ -1,0 +1,145 @@
+@startuml VibraMeet Registration & Waitlist Flow
+
+title VibraMeet - Registration & Smart Waitlist Management
+
+skinparam backgroundColor #ffffff
+skinparam arrowColor #2196F3
+skinparam classBackgroundColor #E3F2FD
+skinparam classBorderColor #1976D2
+
+state Registration_Flow {
+  state "User Views Event" as ViewEvent
+  state "Checks Availability" as CheckAvail {
+    CheckAvail : Available Spots = maxPlayers - confirmed_count
+  }
+  
+  state "Has Spots?" as HasSpots
+  state "Create PENDING" as CreatePending {
+    CreatePending : POST /api/registrations/event/:id
+    CreatePending : Status = PENDING
+  }
+  
+  state "Create WAITLISTED" as CreateWaitlist {
+    CreateWaitlist : POST /api/registrations/event/:id
+    CreateWaitlist : Status = WAITLISTED
+  }
+  
+  state "Waitlist Position" as WaitlistPos {
+    WaitlistPos : GET /api/registrations/event/:id/waitlist-position
+    WaitlistPos : Rank by:
+    WaitlistPos : 1. Most active (events_attended)
+    WaitlistPos : 2. Arrival time
+  }
+  
+  ViewEvent --> CheckAvail
+  CheckAvail --> HasSpots
+  HasSpots --> CreatePending : YES
+  HasSpots --> CreateWaitlist : NO
+  CreateWaitlist --> WaitlistPos
+}
+
+state Admin_Management {
+  state "View Registrations" as ViewRegs {
+    ViewRegs : GET /api/registrations/event/:id
+  }
+  
+  state "Confirm Registration" as ConfirmReg {
+    ConfirmReg : PATCH /api/registrations/:id/status
+    ConfirmReg : Status = CONFIRMED
+  }
+  
+  state "Reject Registration" as RejectReg {
+    RejectReg : PATCH /api/registrations/:id/status
+    RejectReg : Status = REJECTED
+  }
+  
+  state "Check Waitlist" as CheckWL {
+    CheckWL : Query waitlisted users
+    CheckWL : Order by priority
+  }
+  
+  state "Promote Best" as PromoteBest {
+    PromoteBest : Update first waitlist entry
+    PromoteBest : Status = PENDING
+    PromoteBest : Send notification
+  }
+  
+  ViewRegs --> ConfirmReg
+  ConfirmReg --> CheckWL
+  ViewRegs --> RejectReg
+  RejectReg --> CheckWL
+  CheckWL --> PromoteBest
+}
+
+state Penalty_Check {
+  state "User Penalized?" as IsPenalized
+  state "penalizedUntil > now()?" as CheckPenaltyDate
+  
+  state "Block Registration" as BlockReg {
+    BlockReg : Cannot register
+    BlockReg : Show penalty message
+    BlockReg : Show expiration date
+  }
+  
+  state "Allow Registration" as AllowReg
+  
+  IsPenalized --> CheckPenaltyDate
+  CheckPenaltyDate --> BlockReg : YES
+  CheckPenaltyDate --> AllowReg : NO
+}
+
+state Payment_Flow {
+  state "Payment Required?" as PaymentReq
+  
+  state "Trigger Payment" as TriggerPay {
+    TriggerPay : POST /api/payments
+    TriggerPay : Type: FULL, ADVANCE, CUSTOM
+    TriggerPay : Status: PENDING
+  }
+  
+  state "Payment Options" as PayOptions {
+    PayOptions : FULL: 100% (typical)
+    PayOptions : ADVANCE: 50% (partial)
+    PayOptions : CUSTOM: Negotiable
+  }
+  
+  PaymentReq --> TriggerPay : YES
+  TriggerPay --> PayOptions
+}
+
+state Notification_System {
+  state "Send Notifications" as SendNotif {
+    SendNotif : POST /api/notifications
+  }
+  
+  state "Notification Types" as NotifTypes {
+    NotifTypes : - Registration PENDING
+    NotifTypes : - Registration CONFIRMED
+    NotifTypes : - Waitlist PROMOTED
+    NotifTypes : - Payment Required
+    NotifTypes : - Event Cancelled
+  }
+  
+  state "Real-time Update" as RealTime {
+    RealTime : WebSocket broadcast
+    RealTime : Update notification bell
+    RealTime : Show badge count
+  }
+  
+  SendNotif --> NotifTypes
+  NotifTypes --> RealTime
+}
+
+' ==================== SEQUENCE ====================
+
+Registration_Flow --> Penalty_Check
+Penalty_Check --> Registration_Flow : If not penalized
+Penalty_Check --> BlockReg : If penalized
+AllowReg --> Payment_Flow
+Payment_Flow --> Notification_System
+CreatePending --> Notification_System
+CreateWaitlist --> Notification_System
+ConfirmReg --> Notification_System
+PromoteBest --> Notification_System
+
+@enduml

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-03-27" agent="5.0" version="20.0.0">
+  <diagram id="VibraMeet-Main-Flowchart" name="VibraMeet Main Flow">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="VibraMeet - Application Flow" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="275" y="20" width="300" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Start -->
+        <mxCell id="start" value="User Visits App" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#4CAF50;fontColor=#ffffff;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="375" y="70" width="100" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- Login -->
+        <mxCell id="login" value="Login Page" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2196F3;fontColor=#ffffff;strokeColor=#1565C0" vertex="1" parent="1">
+          <mxGeometry x="150" y="200" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Auth -->
+        <mxCell id="auth" value="POST /api/auth/login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2196F3;fontColor=#ffffff;strokeColor=#1565C0" vertex="1" parent="1">
+          <mxGeometry x="150" y="320" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Home -->
+        <mxCell id="home" value="Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4CAF50;fontColor=#ffffff;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="550" y="200" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Role Check -->
+        <mxCell id="rolecheck" value="Check Role" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FF9800;fontColor=#ffffff;strokeColor=#E65100" vertex="1" parent="1">
+          <mxGeometry x="550" y="320" width="150" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- Events -->
+        <mxCell id="events" value="Browse Events" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9C27B0;fontColor=#ffffff;strokeColor=#6A1B9A" vertex="1" parent="1">
+          <mxGeometry x="50" y="480" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Registrations -->
+        <mxCell id="regs" value="My Registrations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9C27B0;fontColor=#ffffff;strokeColor=#6A1B9A" vertex="1" parent="1">
+          <mxGeometry x="250" y="480" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Payments -->
+        <mxCell id="payments" value="Payments" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9C27B0;fontColor=#ffffff;strokeColor=#6A1B9A" vertex="1" parent="1">
+          <mxGeometry x="450" y="480" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Admin Panel -->
+        <mxCell id="admin" value="Admin Panel" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E91E63;fontColor=#ffffff;strokeColor=#880E4F" vertex="1" parent="1">
+          <mxGeometry x="650" y="480" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Event Detail -->
+        <mxCell id="eventdetail" value="Event Details" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#00BCD4;fontColor=#ffffff;strokeColor=#00838F" vertex="1" parent="1">
+          <mxGeometry x="50" y="620" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Register Button -->
+        <mxCell id="regbtn" value="Click Register" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#00BCD4;fontColor=#ffffff;strokeColor=#00838F" vertex="1" parent="1">
+          <mxGeometry x="250" y="620" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Check Spots -->
+        <mxCell id="checkspots" value="Check Available Spots" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FF9800;fontColor=#ffffff;strokeColor=#E65100" vertex="1" parent="1">
+          <mxGeometry x="450" y="600" width="150" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- Has Spots -->
+        <mxCell id="hasspots" value="Create PENDING Reg" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4CAF50;fontColor=#ffffff;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="300" y="780" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- No Spots -->
+        <mxCell id="nospots" value="Create WAITLISTED Reg" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FF9800;fontColor=#ffffff;strokeColor=#E65100" vertex="1" parent="1">
+          <mxGeometry x="600" y="780" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrows -->
+        <mxCell id="arrow1" edge="1" parent="1" source="start" target="login">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow2" edge="1" parent="1" source="login" target="auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow3" edge="1" parent="1" source="auth" target="home">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="360" />
+              <mxPoint x="500" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow4" edge="1" parent="1" source="home" target="rolecheck">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow5" edge="1" parent="1" source="rolecheck" target="events">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="380" />
+              <mxPoint x="125" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow6" edge="1" parent="1" source="rolecheck" target="regs">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="400" />
+              <mxPoint x="325" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow7" edge="1" parent="1" source="rolecheck" target="payments">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow8" edge="1" parent="1" source="rolecheck" target="admin">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="650" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow9" edge="1" parent="1" source="events" target="eventdetail">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow10" edge="1" parent="1" source="eventdetail" target="regbtn">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow11" edge="1" parent="1" source="regbtn" target="checkspots">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow12" edge="1" parent="1" source="checkspots" target="hasspots">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="780" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="400" y="760" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow13" edge="1" parent="1" source="checkspots" target="nospots">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="780" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="600" y="760" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  
+  <diagram id="VibraMeet-Database" name="Database Model">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <mxCell id="title2" value="VibraMeet - Database Tables" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="250" y="20" width="350" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Users Table -->
+        <mxCell id="users_table" value="USERS&#10;---&#10;id (PK)&#10;email&#10;password&#10;name&#10;role (USER/ADMIN/SUPER_ADMIN)&#10;penalizedUntil" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1976D2;align=left;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="50" y="100" width="180" height="150" as="geometry" />
+        </mxCell>
+        
+        <!-- Events Table -->
+        <mxCell id="events_table" value="EVENTS&#10;---&#10;id (PK)&#10;name&#10;category&#10;status (DRAFT/ACTIVE/ARCHIVED)&#10;date&#10;maxPlayers&#10;price&#10;creatorId (FK to Users)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;align=left;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="300" y="100" width="180" height="150" as="geometry" />
+        </mxCell>
+        
+        <!-- Registrations Table -->
+        <mxCell id="regs_table" value="REGISTRATIONS&#10;---&#10;id (PK)&#10;userId (FK)&#10;eventId (FK)&#10;status (PENDING/CONFIRMED&#10;WAITLISTED/REJECTED)&#10;registeredAt" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#C2185B;align=left;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="550" y="100" width="180" height="150" as="geometry" />
+        </mxCell>
+        
+        <!-- Payments Table -->
+        <mxCell id="payments_table" value="PAYMENTS&#10;---&#10;id (PK)&#10;userId (FK)&#10;eventId (FK)&#10;amount&#10;type (FULL/ADVANCE/CUSTOM)&#10;status (PENDING/COMPLETED)&#10;reference" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2F1;strokeColor=#00796B;align=left;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="800" y="100" width="180" height="150" as="geometry" />
+        </mxCell>
+        
+        <!-- Penalties Table -->
+        <mxCell id="penalties_table" value="PENALTIES&#10;---&#10;id (PK)&#10;userId (FK)&#10;eventId (FK)&#10;type (NO_SHOW)&#10;reason&#10;expiresAt" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;align=left;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="175" y="320" width="180" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Notifications Table -->
+        <mxCell id="notif_table" value="NOTIFICATIONS&#10;---&#10;id (PK)&#10;userId (FK)&#10;title&#10;message&#10;type (INFO/WARNING)&#10;read" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F8E9;strokeColor=#558B2F;align=left;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="425" y="320" width="180" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Requests Table -->
+        <mxCell id="requests_table" value="REQUESTS&#10;---&#10;id (PK)&#10;creatorId (FK)&#10;assigneeId (FK)&#10;status (PENDING/RESOLVED)&#10;priority&#10;description" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EAF6;strokeColor=#283593;align=left;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="675" y="320" width="180" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Relationships -->
+        <mxCell id="rel1" edge="1" parent="1" source="users_table" target="events_table" style="endArrow=open;html=1;curved=0;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="150" as="sourcePoint" />
+            <mxPoint x="300" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="rel2" edge="1" parent="1" source="events_table" target="regs_table" style="endArrow=open;html=1;curved=0;dashed=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="rel3" edge="1" parent="1" source="regs_table" target="payments_table" style="endArrow=open;html=1;curved=0;dashed=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="rel4" edge="1" parent="1" source="users_table" target="penalties_table" style="endArrow=open;html=1;curved=0;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="140" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="rel5" edge="1" parent="1" source="users_table" target="notif_table" style="endArrow=open;html=1;curved=0;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="280" />
+              <mxPoint x="515" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="rel6" edge="1" parent="1" source="users_table" target="requests_table" style="endArrow=open;html=1;curved=0;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="290" />
+              <mxPoint x="765" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

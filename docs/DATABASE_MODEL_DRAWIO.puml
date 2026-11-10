@@ -1,0 +1,321 @@
+@startuml VibraMeet Database & API Architecture
+
+title VibraMeet - Architecture Diagram (UML Class Model)
+
+skinparam backgroundColor #f9f9f9
+skinparam classBackgroundColor #e1f5ff
+skinparam classBorderColor #01579b
+skinparam arrowColor #01579b
+
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum EventType {
+  PUBLIC
+  PRIVATE
+}
+
+enum EventCategory {
+  FUTBOL
+  BASKETBALL
+  BAILE
+  BOLOS
+  REUNION
+  OTRO
+}
+
+enum EventStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  ARCHIVED
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  CANCELLED
+  WAITLISTED
+}
+
+enum PaymentType {
+  FULL
+  ADVANCE
+  CUSTOM
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum RequestStatus {
+  PENDING
+  REVIEWED
+  ASSIGNED
+  RESOLVED
+  CLOSED
+}
+
+class User {
+  id: Int
+  email: String (unique)
+  password: String (bcrypt)
+  name: String
+  phone: String
+  address: String
+  photo: String (URL)
+  emergencyContact: String
+  role: Role (default: USER)
+  penalizedUntil: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+  --
+  Relations:
+  createdEvents: Event[]
+  registrations: Registration[]
+  payments: Payment[]
+  requests: Request[]
+  notifications: Notification[]
+  penalties: Penalty[]
+}
+
+class Event {
+  id: Int
+  name: String
+  description: String
+  type: EventType (PUBLIC/PRIVATE)
+  category: EventCategory
+  status: EventStatus
+  date: DateTime
+  endDate: DateTime
+  location: String
+  latitude: Float
+  longitude: Float
+  maxPlayers: Int
+  price: Decimal
+  image: String (URL)
+  creatorId: Int (FK)
+  createdAt: DateTime
+  updatedAt: DateTime
+  --
+  Relations:
+  creator: User
+  registrations: Registration[]
+  invitations: EventInvitation[]
+  payments: Payment[]
+  requests: Request[]
+  penalties: Penalty[]
+  sponsors: EventSponsor[]
+}
+
+class Registration {
+  id: Int
+  userId: Int (FK)
+  eventId: Int (FK)
+  status: RegistrationStatus
+  registeredAt: DateTime
+  --
+  Relations:
+  user: User
+  event: Event
+  payments: Payment[]
+}
+
+class Payment {
+  id: Int
+  userId: Int (FK)
+  eventId: Int (FK)
+  registrationId: Int (FK)
+  amount: Decimal
+  type: PaymentType
+  status: PaymentStatus
+  reference: String
+  notes: String
+  createdAt: DateTime
+  --
+  Relations:
+  user: User
+  event: Event
+  registration: Registration
+}
+
+class Request {
+  id: Int
+  creatorId: Int (FK)
+  assigneeId: Int (FK)
+  type: String (PETITION/COMPLAINT/etc)
+  priority: String (LOW/MEDIUM/HIGH)
+  status: RequestStatus
+  title: String
+  description: String
+  createdAt: DateTime
+  --
+  Relations:
+  creator: User
+  assignee: User
+  comments: RequestComment[]
+}
+
+class Penalty {
+  id: Int
+  userId: Int (FK)
+  eventId: Int (FK)
+  type: String (NO_SHOW/VIOLATION)
+  reason: String
+  active: Boolean
+  expiresAt: DateTime
+  createdAt: DateTime
+  --
+  Relations:
+  user: User
+  event: Event
+}
+
+class EventInvitation {
+  id: Int
+  eventId: Int (FK)
+  invitedUserId: Int (FK)
+  invitedById: Int (FK)
+  status: String (PENDING/ACCEPTED/DECLINED)
+  invitedAt: DateTime
+  --
+  Relations:
+  event: Event
+  invitedUser: User
+  invitedBy: User
+}
+
+class Notification {
+  id: Int
+  userId: Int (FK)
+  title: String
+  message: String
+  type: String (INFO/SUCCESS/WARNING/ERROR)
+  read: Boolean
+  createdAt: DateTime
+  --
+  Relations:
+  user: User
+}
+
+class Space {
+  id: Int
+  name: String
+  description: String
+  category: EventCategory
+  isPublic: Boolean
+  createdAt: DateTime
+  --
+  Relations:
+  events: Event[]
+  admins: SpaceAdmin[]
+  groups: UserGroup[]
+}
+
+class SpaceAdmin {
+  id: Int
+  spaceId: Int (FK)
+  adminId: Int (FK)
+  assignedAt: DateTime
+  --
+  Relations:
+  space: Space
+  admin: User
+}
+
+class UserGroup {
+  id: Int
+  spaceId: Int (FK)
+  name: String
+  description: String
+  adminId: Int (FK)
+  createdAt: DateTime
+  --
+  Relations:
+  space: Space
+  admin: User
+  members: UserGroupMember[]
+}
+
+class UserGroupMember {
+  id: Int
+  groupId: Int (FK)
+  userId: Int (FK)
+  joinedAt: DateTime
+  --
+  Relations:
+  group: UserGroup
+  user: User
+}
+
+class Sponsor {
+  id: Int
+  name: String
+  email: String
+  phone: String
+  website: String
+  logo: String (URL)
+  createdAt: DateTime
+  --
+  Relations:
+  eventSponsors: EventSponsor[]
+}
+
+class EventSponsor {
+  id: Int
+  eventId: Int (FK)
+  sponsorId: Int (FK)
+  amount: Decimal
+  description: String
+  --
+  Relations:
+  event: Event
+  sponsor: Sponsor
+}
+
+class Client {
+  id: Int
+  name: String
+  email: String
+  phone: String
+  company: String
+  createdAt: DateTime
+  --
+  Relations:
+  events: Event[]
+}
+
+' ==================== RELATIONSHIPS ====================
+
+User "1" --> "*" Event : creates
+User "1" --> "*" Registration : makes
+User "1" --> "*" Payment : makes
+User "1" --> "*" Request : creates/assigns
+User "1" --> "*" Penalty : receives
+User "1" --> "*" Notification : receives
+User "1" --> "*" EventInvitation : invites/invited by
+User "1" --> "*" SpaceAdmin : manages
+User "1" --> "*" UserGroup : creates/joins
+
+Event "1" --> "*" Registration : has
+Event "1" --> "*" Payment : receives
+Event "1" --> "*" Request : has
+Event "1" --> "*" Penalty : causes
+Event "1" --> "*" EventInvitation : invites
+Event "1" --> "*" EventSponsor : sponsors
+
+Registration "1" --> "*" Payment : link
+Space "1" --> "*" Event : contains
+Space "1" --> "*" SpaceAdmin : managed by
+Space "1" --> "*" UserGroup : contains
+UserGroup "1" --> "*" UserGroupMember : has
+Sponsor "1" --> "*" EventSponsor : sponsors
+
+@enduml

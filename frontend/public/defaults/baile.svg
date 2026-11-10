@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <defs><linearGradient id="d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#db2777"/><stop offset="100%" style="stop-color:#9333ea"/></linearGradient></defs>
+  <rect width="400" height="200" fill="url(#d)"/>
+  <circle cx="150" cy="70" r="10" fill="white" opacity="0.2"/>
+  <path d="M150 80 L150 120 M140 95 L160 95 M150 120 L135 155 M150 120 L165 155" stroke="white" stroke-width="2" opacity="0.2" stroke-linecap="round"/>
+  <circle cx="260" cy="65" r="10" fill="white" opacity="0.2"/>
+  <path d="M260 75 L260 115 M250 90 L270 90 M260 115 L245 150 M260 115 L275 150" stroke="white" stroke-width="2" opacity="0.2" stroke-linecap="round" transform="rotate(-15 260 110)"/>
+  <circle cx="100" cy="50" r="3" fill="white" opacity="0.15"/>
+  <circle cx="320" cy="40" r="2" fill="white" opacity="0.15"/>
+  <circle cx="200" cy="30" r="2.5" fill="white" opacity="0.1"/>
+  <text x="200" y="180" text-anchor="middle" fill="white" opacity="0.5" font-family="sans-serif" font-size="14" font-weight="bold">BAILE</text>
+</svg>

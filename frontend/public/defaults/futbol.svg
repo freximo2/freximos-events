@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <defs><linearGradient id="f" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#16a34a"/><stop offset="100%" style="stop-color:#059669"/></linearGradient></defs>
+  <rect width="400" height="200" fill="url(#f)"/>
+  <line x1="200" y1="0" x2="200" y2="200" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <circle cx="200" cy="100" r="30" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <circle cx="300" cy="100" r="20" fill="white" opacity="0.15"/>
+  <path d="M295 95 L305 95 L308 105 L300 110 L292 105Z" fill="white" opacity="0.25"/>
+  <text x="200" y="180" text-anchor="middle" fill="white" opacity="0.5" font-family="sans-serif" font-size="14" font-weight="bold">FUTBOL</text>
+</svg>

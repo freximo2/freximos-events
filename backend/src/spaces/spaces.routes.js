@@ -1,0 +1,15 @@
+const { Router } = require('express');
+const { body } = require('express-validator');
+const { authenticate, authorize } = require('../middleware/auth');
+const spacesController = require('./spaces.controller');
+const router = Router();
+router.use(authenticate);
+router.get('/my', authorize('ADMIN', 'SUPER_ADMIN'), spacesController.mySpaces);
+router.get('/', authorize('SUPER_ADMIN'), spacesController.list);
+router.get('/:id', authorize('ADMIN', 'SUPER_ADMIN'), spacesController.getById);
+router.post('/', authorize('SUPER_ADMIN'), [body('name').notEmpty()], spacesController.create);
+router.put('/:id', authorize('SUPER_ADMIN'), spacesController.update);
+router.delete('/:id', authorize('SUPER_ADMIN'), spacesController.remove);
+router.post('/:id/admins', authorize('SUPER_ADMIN'), spacesController.assignAdmin);
+router.delete('/:id/admins/:adminId', authorize('SUPER_ADMIN'), spacesController.removeAdmin);
+module.exports = router;

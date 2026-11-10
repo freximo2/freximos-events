@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <defs><linearGradient id="bo" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#4f46e5"/><stop offset="100%" style="stop-color:#6366f1"/></linearGradient></defs>
+  <rect width="400" height="200" fill="url(#bo)"/>
+  <circle cx="290" cy="120" r="18" fill="white" opacity="0.15"/>
+  <circle cx="290" cy="112" r="3" fill="white" opacity="0.2"/>
+  <circle cx="285" cy="117" r="2" fill="white" opacity="0.2"/>
+  <circle cx="295" cy="117" r="2" fill="white" opacity="0.2"/>
+  <ellipse cx="140" cy="140" rx="6" ry="18" fill="white" opacity="0.15"/>
+  <ellipse cx="155" cy="140" rx="6" ry="18" fill="white" opacity="0.15"/>
+  <ellipse cx="170" cy="140" rx="6" ry="18" fill="white" opacity="0.15"/>
+  <ellipse cx="147" cy="120" rx="6" ry="18" fill="white" opacity="0.12"/>
+  <ellipse cx="163" cy="120" rx="6" ry="18" fill="white" opacity="0.12"/>
+  <text x="200" y="180" text-anchor="middle" fill="white" opacity="0.5" font-family="sans-serif" font-size="14" font-weight="bold">BOLOS</text>
+</svg>

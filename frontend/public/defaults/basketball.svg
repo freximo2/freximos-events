@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <defs><linearGradient id="b" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#ea580c"/><stop offset="100%" style="stop-color:#c2410c"/></linearGradient></defs>
+  <rect width="400" height="200" fill="url(#b)"/>
+  <circle cx="300" cy="100" r="28" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
+  <line x1="272" y1="100" x2="328" y2="100" stroke="white" stroke-width="1.5" opacity="0.25"/>
+  <path d="M285 72 Q300 100 285 128" fill="none" stroke="white" stroke-width="1.5" opacity="0.25"/>
+  <path d="M315 72 Q300 100 315 128" fill="none" stroke="white" stroke-width="1.5" opacity="0.25"/>
+  <rect x="80" y="60" width="100" height="80" rx="3" fill="none" stroke="white" stroke-width="1.5" opacity="0.2"/>
+  <text x="200" y="180" text-anchor="middle" fill="white" opacity="0.5" font-family="sans-serif" font-size="14" font-weight="bold">BASKETBALL</text>
+</svg>
