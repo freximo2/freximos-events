@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const prisma = require('../config/db');
 
@@ -244,4 +245,57 @@ async function deleteUser(req, res) {
   }
 }
 
-module.exports = { getProfile, updateProfile, listUsers, uploadPhoto, changeRole, invite, deleteUser };
+// Cambio de contraseña del propio usuario (requiere la contraseña actual)
+async function changeOwnPassword(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const valid = await bcrypt.compare(currentPassword, user.password);
+    if (!valid) {
+      return res.status(400).json({ error: 'La contraseña actual no es correcta' });
+    }
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({ where: { id: user.id }, data: { password: hash } });
+    res.json({ message: 'Contraseña actualizada correctamente' });
+  } catch (error) {
+    console.error('Error cambiando contraseña:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+// Restablecimiento de contraseña por un SUPER_ADMIN para cualquier usuario
+async function resetUserPassword(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const userId = parseInt(req.params.id, 10);
+    const { newPassword } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({ where: { id: userId }, data: { password: hash } });
+    res.json({ message: 'Contraseña restablecida correctamente' });
+  } catch (error) {
+    console.error('Error restableciendo contraseña:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+module.exports = { getProfile, updateProfile, listUsers, uploadPhoto, changeRole, invite, deleteUser, changeOwnPassword, resetUserPassword };

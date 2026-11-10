@@ -33,6 +33,16 @@ export const authService = {
 
 export const userService = {
   getProfile: () => request('/users/me'),
+  changeOwnPassword: (currentPassword, newPassword) =>
+    request('/users/me/password', {
+      method: 'PATCH',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }),
+  resetUserPassword: (id, newPassword) =>
+    request(`/users/${id}/password`, {
+      method: 'PATCH',
+      body: JSON.stringify({ newPassword }),
+    }),
   updateProfile: (data) =>
     request('/users/me', {
       method: 'PUT',

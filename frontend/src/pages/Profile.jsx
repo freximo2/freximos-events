@@ -7,6 +7,30 @@ export default function Profile() {
   const [form, setForm] = useState({});
   const [message, setMessage] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '', confirm: '' });
+  const [pwMessage, setPwMessage] = useState({ type: '', text: '' });
+  const [pwSaving, setPwSaving] = useState(false);
+
+  async function handleChangePassword(e) {
+    e.preventDefault();
+    setPwMessage({ type: '', text: '' });
+    if (pwForm.newPassword.length < 8) {
+      return setPwMessage({ type: 'error', text: 'La nueva contraseña debe tener al menos 8 caracteres' });
+    }
+    if (pwForm.newPassword !== pwForm.confirm) {
+      return setPwMessage({ type: 'error', text: 'Las contraseñas nuevas no coinciden' });
+    }
+    setPwSaving(true);
+    try {
+      await userService.changeOwnPassword(pwForm.currentPassword, pwForm.newPassword);
+      setPwForm({ currentPassword: '', newPassword: '', confirm: '' });
+      setPwMessage({ type: 'ok', text: 'Contraseña actualizada correctamente' });
+    } catch (err) {
+      setPwMessage({ type: 'error', text: err.error || 'No se pudo cambiar la contraseña' });
+    } finally {
+      setPwSaving(false);
+    }
+  }
   const fileRef = useRef();
 
   useEffect(() => {
@@ -194,6 +218,48 @@ export default function Profile() {
               Editar
             </button>
           )}
+        </div>
+      </form>
+      <form onSubmit={handleChangePassword} className="bg-white rounded-xl shadow p-6 space-y-4 mt-6">
+        <h2 className="text-lg font-semibold text-gray-800">Cambiar contraseña</h2>
+        {pwMessage.text && (
+          <p className={`text-sm ${pwMessage.type === 'ok' ? 'text-green-700' : 'text-red-600'}`}>{pwMessage.text}</p>
+        )}
+        <input
+          type="password"
+          placeholder="Contraseña actual"
+          autoComplete="current-password"
+          required
+          value={pwForm.currentPassword}
+          onChange={(e) => setPwForm({ ...pwForm, currentPassword: e.target.value })}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2"
+        />
+        <input
+          type="password"
+          placeholder="Nueva contraseña (mínimo 8 caracteres)"
+          autoComplete="new-password"
+          required
+          value={pwForm.newPassword}
+          onChange={(e) => setPwForm({ ...pwForm, newPassword: e.target.value })}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2"
+        />
+        <input
+          type="password"
+          placeholder="Confirmar nueva contraseña"
+          autoComplete="new-password"
+          required
+          value={pwForm.confirm}
+          onChange={(e) => setPwForm({ ...pwForm, confirm: e.target.value })}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2"
+        />
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={pwSaving}
+            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition disabled:opacity-60"
+          >
+            {pwSaving ? 'Guardando…' : 'Actualizar contraseña'}
+          </button>
         </div>
       </form>
     </div>

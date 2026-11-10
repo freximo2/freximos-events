@@ -69,4 +69,23 @@ router.delete(
   usersController.deleteUser
 );
 
+// Orden importante: /me/password debe ir antes de /:id/password
+router.patch(
+  '/me/password',
+  authenticate,
+  [
+    body('currentPassword').notEmpty().withMessage('La contraseña actual es requerida'),
+    body('newPassword').isLength({ min: 8 }).withMessage('La nueva contraseña debe tener al menos 8 caracteres'),
+  ],
+  usersController.changeOwnPassword
+);
+
+router.patch(
+  '/:id/password',
+  authenticate,
+  authorize('SUPER_ADMIN'),
+  [body('newPassword').isLength({ min: 8 }).withMessage('La contraseña debe tener al menos 8 caracteres')],
+  usersController.resetUserPassword
+);
+
 module.exports = router;
