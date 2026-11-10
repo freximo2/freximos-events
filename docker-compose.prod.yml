@@ -1,5 +1,6 @@
 # Producción local (detrás de Cloudflare Tunnel).
-# Uso: docker-compose -p eventos-prod -f docker-compose.prod.yml up --build -d
+# Uso (desde esta carpeta):  cp .env.prod.example .env.prod  (y completar)
+#   docker-compose -p eventos-prod -f docker-compose.prod.yml --env-file .env.prod up --build -d
 # Secretos en .env.prod (no versionado).
 
 services:
@@ -21,6 +22,8 @@ services:
       dockerfile: Dockerfile.prod
     restart: unless-stopped
     env_file: .env.prod
+    environment:
+      ALLOWED_ORIGINS: https://eventos.freximos.com
     depends_on:
       db:
         condition: service_healthy

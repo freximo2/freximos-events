@@ -21,7 +21,15 @@ const templatesRoutes = require('./templates/templates.routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+const { ALLOWED_ORIGINS } = require('./config/env');
+
+// Solo orígenes explícitos. Las peticiones sin origen (mismo sitio vía proxy, herramientas locales) pasan.
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    return cb(new Error('Origen no permitido por CORS'));
+  },
+}));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
@@ -45,6 +53,15 @@ app.use('/api/spaces', spacesRoutes);
 app.use('/api/groups', groupsRoutes);
 app.use('/api/event-type-requests', eventTypeRequestsRoutes);
 app.use('/api/templates', templatesRoutes);
+
+// Manejador de errores: CORS → 403; el resto no expone detalles internos
+app.use((err, _req, res, _next) => {
+  if (err && typeof err.message === 'string' && err.message.startsWith('Origen no permitido')) {
+    return res.status(403).json({ error: 'Origen no permitido' });
+  }
+  console.error(err);
+  return res.status(500).json({ error: 'Error interno del servidor' });
+});
 
 app.listen(PORT, () => {
   console.log(`VibraMeet API corriendo en puerto ${PORT}`);
