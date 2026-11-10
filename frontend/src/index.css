@@ -2,27 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== Tema: mismo patrón visual de freximos.com ===== */
+:root {
+  color-scheme: dark;
+  --bg: #0b0d12;
+  --surface: #10131a;
+  --border: rgba(53, 214, 192, 0.18);
+  --border-soft: #292d38;
+  --text: #f1f3f8;
+  --muted: #a7adbd;
+  --turquesa: #35d6c0;
+  --cian: #22c8e8;
+  --grad-brand: linear-gradient(100deg, #35d6c0, #22c8e8);
+  --grad-cta: linear-gradient(100deg, #b77af5 0%, #22c8e8 100%);
+}
+
 @layer base {
-  body {
-    @apply bg-gradient-to-br from-slate-50 via-white to-blue-50/30 min-h-screen;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   }
+  body {
+    min-height: 100vh;
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(ellipse at 0% 40%, rgba(36, 22, 49, 0.55), transparent 55%),
+      radial-gradient(ellipse at 100% 60%, rgba(16, 56, 59, 0.55), transparent 55%),
+      var(--bg);
+  }
+  input, textarea, select {
+    color: var(--text);
+    background-color: var(--surface);
+  }
+  ::placeholder { color: #5b6275; }
 }
 
 @layer components {
-  .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg;
-  }
-  .glass-dark {
-    @apply bg-slate-900/80 backdrop-blur-xl border border-white/10;
+  .glass, .glass-dark {
+    background-color: rgba(16, 19, 26, 0.86);
+    border: 1px solid var(--border);
+    box-shadow: 0 0 40px rgba(34, 200, 232, 0.06);
   }
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    @apply transition-all duration-300 hover:-translate-y-0.5;
   }
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-600 to-primary-500 text-white px-5 py-2.5 rounded-xl
-           hover:from-primary-700 hover:to-primary-600 transition-all duration-300
-           shadow-md hover:shadow-lg active:scale-[0.98] font-medium;
+    @apply px-5 py-2.5 rounded-xl font-semibold text-[#0b0d12] transition-all duration-300
+           shadow-md hover:brightness-110 active:scale-[0.98];
+    background: var(--grad-cta);
   }
   .btn-danger {
     @apply bg-gradient-to-r from-red-600 to-red-500 text-white px-5 py-2.5 rounded-xl
@@ -30,26 +59,206 @@
            shadow-md hover:shadow-lg active:scale-[0.98] font-medium;
   }
   .btn-secondary {
-    @apply bg-white text-gray-700 px-5 py-2.5 rounded-xl border border-gray-200
-           hover:bg-gray-50 hover:border-gray-300 transition-all duration-300
-           shadow-sm hover:shadow-md active:scale-[0.98] font-medium;
+    @apply px-5 py-2.5 rounded-xl font-medium transition-all duration-300 active:scale-[0.98];
+    background: transparent;
+    color: var(--turquesa);
+    border: 1px solid var(--cian);
   }
+  .btn-secondary:hover { background: rgba(34, 200, 232, 0.10); }
   .input-modern {
-    @apply w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm
-           focus:ring-2 focus:ring-primary-400/50 focus:border-primary-400
-           outline-none transition-all duration-200 bg-white/80 backdrop-blur-sm;
+    @apply w-full rounded-xl px-4 py-2.5 text-sm outline-none transition-all duration-200;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    color: var(--text);
+  }
+  .input-modern:focus {
+    border-color: var(--cian);
+    box-shadow: 0 0 0 3px rgba(34, 200, 232, 0.14);
   }
   .badge {
     @apply text-xs px-2.5 py-1 rounded-full font-medium;
   }
   .stat-card {
-    @apply bg-white rounded-2xl shadow-md p-6 text-center card-hover border border-gray-100;
+    @apply rounded-2xl p-6 text-center card-hover;
+    background: var(--surface);
+    border: 1px solid var(--border);
   }
 }
 
+/* Fondos blancos de Tailwind → superficie oscura */
+.bg-white,
+.bg-white\/70, .bg-white\/80, .bg-white\/95 {
+  background-color: rgba(16, 19, 26, 0.9) !important;
+}
+
+/* Badges de color: fondo tenue y texto legible sobre oscuro */
+.bg-green-100 { background-color: rgba(52, 211, 153, 0.14) !important; }
+.text-green-800, .text-green-700 { color: #6ee7b7 !important; }
+.bg-red-100 { background-color: rgba(248, 113, 113, 0.14) !important; }
+.text-red-800, .text-red-700 { color: #fca5a5 !important; }
+.bg-yellow-100, .bg-amber-100 { background-color: rgba(251, 191, 36, 0.14) !important; }
+.text-yellow-800, .text-amber-800, .text-yellow-700, .text-amber-700 { color: #fcd34d !important; }
+.bg-blue-100, .bg-sky-100 { background-color: rgba(56, 189, 248, 0.14) !important; }
+.text-blue-800, .text-sky-800, .text-blue-700 { color: #93c5fd !important; }
+.bg-purple-100, .bg-violet-100, .bg-indigo-100 { background-color: rgba(192, 132, 252, 0.14) !important; }
+.text-purple-800, .text-violet-800, .text-indigo-800, .text-purple-700 { color: #d8b4fe !important; }
+.bg-orange-100 { background-color: rgba(251, 146, 60, 0.14) !important; }
+.text-orange-800 { color: #fdba74 !important; }
+.bg-pink-100, .bg-rose-100 { background-color: rgba(216, 90, 168, 0.14) !important; }
+.text-pink-800, .text-rose-800 { color: #f9a8d4 !important; }
+
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+::-webkit-scrollbar-thumb { background: #353d4c; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #5b6275; }
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Universo suave: estrellas y nebulosas moradas y cian, de arriba-izquierda a abajo-derecha */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -40%;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 1000' preserveAspectRatio='none'%3E%3Cdefs%3E%3CradialGradient id='a' cx='50%' cy='50%' r='50%'%3E%3Cstop offset='0' stop-color='%23c084fc' stop-opacity='0.55'/%3E%3Cstop offset='1' stop-color='%23c084fc' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='b' cx='50%' cy='50%' r='50%'%3E%3Cstop offset='0' stop-color='%2322d3ee' stop-opacity='0.45'/%3E%3Cstop offset='1' stop-color='%2322d3ee' stop-opacity='0'/%3E%3C/radialGradient%3E%3Cfilter id='n'%3E%3CfeGaussianBlur stdDeviation='40'/%3E%3C/filter%3E%3C/defs%3E%3Cg filter='url(%23n)'%3E%3Ccircle cx='300' cy='260' r='380' fill='url(%23a)'/%3E%3Ccircle cx='1180' cy='640' r='440' fill='url(%23b)'/%3E%3Ccircle cx='760' cy='980' r='360' fill='url(%23a)'/%3E%3Ccircle cx='1420' cy='140' r='300' fill='url(%23b)'/%3E%3C/g%3E%3Cg fill='white'%3E%3Ccircle cx='635' cy='164' r='0.9' fill-opacity='0.45'/%3E%3Ccircle cx='169' cy='37' r='1.6' fill-opacity='0.65'/%3E%3Ccircle cx='1145' cy='41' r='1.6' fill-opacity='0.43'/%3E%3Ccircle cx='1182' cy='599' r='1.2' fill-opacity='0.83'/%3E%3Ccircle cx='1422' cy='178' r='1.6' fill-opacity='0.73'/%3E%3Ccircle cx='1402' cy='319' r='0.7' fill-opacity='0.60'/%3E%3Ccircle cx='633' cy='242' r='0.7' fill-opacity='0.58'/%3E%3Ccircle cx='564' cy='985' r='0.7' fill-opacity='0.60'/%3E%3Ccircle cx='1488' cy='618' r='0.7' fill-opacity='0.53'/%3E%3Ccircle cx='311' cy='971' r='0.9' fill-opacity='0.79'/%3E%3Ccircle cx='700' cy='976' r='0.9' fill-opacity='0.91'/%3E%3Ccircle cx='1076' cy='-18' r='0.7' fill-opacity='0.41'/%3E%3Ccircle cx='1116' cy='409' r='1.6' fill-opacity='0.71'/%3E%3Ccircle cx='186' cy='631' r='1.6' fill-opacity='0.51'/%3E%3Ccircle cx='840' cy='165' r='0.7' fill-opacity='0.72'/%3E%3Ccircle cx='702' cy='551' r='0.9' fill-opacity='0.53'/%3E%3Ccircle cx='1135' cy='973' r='0.9' fill-opacity='0.78'/%3E%3Ccircle cx='1176' cy='812' r='0.9' fill-opacity='0.70'/%3E%3Ccircle cx='642' cy='48' r='0.9' fill-opacity='0.49'/%3E%3Ccircle cx='1645' cy='399' r='0.9' fill-opacity='0.87'/%3E%3Ccircle cx='489' cy='499' r='0.9' fill-opacity='0.85'/%3E%3Ccircle cx='142' cy='861' r='0.9' fill-opacity='0.74'/%3E%3Ccircle cx='802' cy='-48' r='0.7' fill-opacity='0.52'/%3E%3Ccircle cx='588' cy='317' r='1.6' fill-opacity='0.55'/%3E%3Ccircle cx='1340' cy='538' r='0.9' fill-opacity='0.87'/%3E%3Ccircle cx='1528' cy='748' r='1.6' fill-opacity='0.80'/%3E%3Ccircle cx='336' cy='896' r='0.9' fill-opacity='0.72'/%3E%3Ccircle cx='474' cy='919' r='1.2' fill-opacity='0.44'/%3E%3Ccircle cx='1332' cy='695' r='0.9' fill-opacity='0.55'/%3E%3Ccircle cx='694' cy='1014' r='1.6' fill-opacity='0.57'/%3E%3Ccircle cx='1501' cy='18' r='1.2' fill-opacity='0.89'/%3E%3Ccircle cx='1444' cy='823' r='0.9' fill-opacity='0.90'/%3E%3Ccircle cx='382' cy='927' r='1.6' fill-opacity='0.93'/%3E%3Ccircle cx='1361' cy='119' r='1.6' fill-opacity='0.74'/%3E%3Ccircle cx='979' cy='1046' r='1.6' fill-opacity='0.43'/%3E%3Ccircle cx='519' cy='161' r='0.7' fill-opacity='0.73'/%3E%3Ccircle cx='1134' cy='1020' r='0.9' fill-opacity='0.88'/%3E%3Ccircle cx='1089' cy='824' r='1.2' fill-opacity='0.73'/%3E%3Ccircle cx='1218' cy='910' r='0.9' fill-opacity='0.57'/%3E%3Ccircle cx='1422' cy='675' r='0.7' fill-opacity='0.37'/%3E%3Ccircle cx='855' cy='-59' r='1.2' fill-opacity='0.92'/%3E%3Ccircle cx='1623' cy='1049' r='1.6' fill-opacity='0.91'/%3E%3Ccircle cx='394' cy='894' r='1.6' fill-opacity='0.60'/%3E%3Ccircle cx='853' cy='634' r='1.2' fill-opacity='0.43'/%3E%3Ccircle cx='-25' cy='58' r='1.2' fill-opacity='0.35'/%3E%3Ccircle cx='-5' cy='5' r='1.2' fill-opacity='0.54'/%3E%3Ccircle cx='898' cy='1002' r='1.2' fill-opacity='0.43'/%3E%3Ccircle cx='112' cy='907' r='1.6' fill-opacity='0.56'/%3E%3Ccircle cx='236' cy='456' r='0.9' fill-opacity='0.87'/%3E%3Ccircle cx='1491' cy='912' r='1.6' fill-opacity='0.57'/%3E%3Ccircle cx='1581' cy='140' r='1.2' fill-opacity='0.43'/%3E%3Ccircle cx='737' cy='886' r='1.6' fill-opacity='0.42'/%3E%3Ccircle cx='1510' cy='1058' r='1.6' fill-opacity='0.73'/%3E%3Ccircle cx='1626' cy='535' r='1.6' fill-opacity='0.64'/%3E%3Ccircle cx='138' cy='832' r='0.7' fill-opacity='0.52'/%3E%3Ccircle cx='1202' cy='578' r='1.2' fill-opacity='0.71'/%3E%3Ccircle cx='943' cy='404' r='0.9' fill-opacity='0.39'/%3E%3Ccircle cx='1522' cy='385' r='0.7' fill-opacity='0.52'/%3E%3Ccircle cx='336' cy='786' r='0.9' fill-opacity='0.84'/%3E%3Ccircle cx='39' cy='808' r='0.9' fill-opacity='0.82'/%3E%3Ccircle cx='142' cy='132' r='1.2' fill-opacity='0.73'/%3E%3Ccircle cx='62' cy='969' r='0.9' fill-opacity='0.76'/%3E%3Ccircle cx='1062' cy='853' r='0.7' fill-opacity='0.78'/%3E%3Ccircle cx='135' cy='81' r='0.9' fill-opacity='0.40'/%3E%3Ccircle cx='89' cy='790' r='1.6' fill-opacity='0.41'/%3E%3Ccircle cx='1438' cy='743' r='0.9' fill-opacity='0.52'/%3E%3Ccircle cx='31' cy='323' r='1.6' fill-opacity='0.42'/%3E%3Ccircle cx='249' cy='64' r='1.6' fill-opacity='0.72'/%3E%3Ccircle cx='837' cy='981' r='0.9' fill-opacity='0.54'/%3E%3Ccircle cx='1113' cy='49' r='0.9' fill-opacity='0.67'/%3E%3Ccircle cx='1201' cy='615' r='0.7' fill-opacity='0.87'/%3E%3Ccircle cx='218' cy='937' r='0.9' fill-opacity='0.80'/%3E%3Ccircle cx='582' cy='291' r='0.7' fill-opacity='0.68'/%3E%3Ccircle cx='-25' cy='1002' r='0.9' fill-opacity='0.91'/%3E%3Ccircle cx='1455' cy='847' r='1.2' fill-opacity='0.49'/%3E%3Ccircle cx='787' cy='838' r='0.7' fill-opacity='0.53'/%3E%3Ccircle cx='983' cy='295' r='1.2' fill-opacity='0.73'/%3E%3Ccircle cx='1325' cy='1025' r='1.6' fill-opacity='0.83'/%3E%3Ccircle cx='990' cy='554' r='0.7' fill-opacity='0.80'/%3E%3Ccircle cx='1555' cy='768' r='1.6' fill-opacity='0.63'/%3E%3Ccircle cx='1490' cy='195' r='1.6' fill-opacity='0.94'/%3E%3Ccircle cx='305' cy='666' r='0.9' fill-opacity='0.85'/%3E%3Ccircle cx='102' cy='-55' r='0.7' fill-opacity='0.84'/%3E%3Ccircle cx='167' cy='1008' r='1.2' fill-opacity='0.34'/%3E%3Ccircle cx='1454' cy='145' r='1.6' fill-opacity='0.40'/%3E%3Ccircle cx='1544' cy='-20' r='1.6' fill-opacity='0.91'/%3E%3Ccircle cx='1620' cy='23' r='0.9' fill-opacity='0.52'/%3E%3Ccircle cx='167' cy='967' r='0.7' fill-opacity='0.54'/%3E%3Ccircle cx='215' cy='762' r='1.6' fill-opacity='0.44'/%3E%3Ccircle cx='1410' cy='429' r='0.9' fill-opacity='0.89'/%3E%3Ccircle cx='239' cy='472' r='0.9' fill-opacity='0.41'/%3E%3Ccircle cx='1121' cy='128' r='0.7' fill-opacity='0.45'/%3E%3Ccircle cx='842' cy='710' r='1.6' fill-opacity='0.56'/%3E%3Ccircle cx='906' cy='211' r='1.2' fill-opacity='0.80'/%3E%3Ccircle cx='515' cy='152' r='0.7' fill-opacity='0.91'/%3E%3Ccircle cx='691' cy='293' r='0.7' fill-opacity='0.73'/%3E%3Ccircle cx='258' cy='948' r='1.2' fill-opacity='0.31'/%3E%3Ccircle cx='852' cy='160' r='1.2' fill-opacity='0.37'/%3E%3Ccircle cx='533' cy='99' r='1.2' fill-opacity='0.65'/%3E%3Ccircle cx='281' cy='2' r='0.7' fill-opacity='0.53'/%3E%3Ccircle cx='183' cy='28' r='1.6' fill-opacity='0.31'/%3E%3Ccircle cx='1559' cy='937' r='0.9' fill-opacity='0.65'/%3E%3Ccircle cx='1281' cy='-36' r='0.9' fill-opacity='0.44'/%3E%3Ccircle cx='531' cy='227' r='0.7' fill-opacity='0.72'/%3E%3Ccircle cx='687' cy='676' r='0.7' fill-opacity='0.75'/%3E%3Ccircle cx='1613' cy='354' r='1.6' fill-opacity='0.66'/%3E%3Ccircle cx='586' cy='566' r='1.2' fill-opacity='0.51'/%3E%3Ccircle cx='533' cy='71' r='0.9' fill-opacity='0.34'/%3E%3Ccircle cx='-3' cy='239' r='0.7' fill-opacity='0.48'/%3E%3Ccircle cx='468' cy='640' r='0.9' fill-opacity='0.59'/%3E%3Ccircle cx='705' cy='-41' r='1.2' fill-opacity='0.35'/%3E%3Ccircle cx='599' cy='766' r='1.2' fill-opacity='0.62'/%3E%3Ccircle cx='1560' cy='844' r='1.6' fill-opacity='0.58'/%3E%3Ccircle cx='1539' cy='299' r='0.9' fill-opacity='0.69'/%3E%3Ccircle cx='859' cy='916' r='0.7' fill-opacity='0.90'/%3E%3Ccircle cx='625' cy='173' r='1.2' fill-opacity='0.59'/%3E%3Ccircle cx='783' cy='1056' r='0.7' fill-opacity='0.75'/%3E%3Ccircle cx='22' cy='34' r='0.9' fill-opacity='0.86'/%3E%3Ccircle cx='271' cy='929' r='0.7' fill-opacity='0.31'/%3E%3Ccircle cx='1315' cy='184' r='0.7' fill-opacity='0.31'/%3E%3Ccircle cx='679' cy='991' r='1.2' fill-opacity='0.42'/%3E%3Ccircle cx='172' cy='807' r='1.2' fill-opacity='0.95'/%3E%3Ccircle cx='1154' cy='57' r='0.9' fill-opacity='0.79'/%3E%3Ccircle cx='604' cy='48' r='1.2' fill-opacity='0.92'/%3E%3Ccircle cx='463' cy='891' r='0.9' fill-opacity='0.79'/%3E%3Ccircle cx='1191' cy='-21' r='0.7' fill-opacity='0.46'/%3E%3Ccircle cx='613' cy='935' r='1.6' fill-opacity='0.44'/%3E%3Ccircle cx='1655' cy='802' r='1.2' fill-opacity='0.84'/%3E%3Ccircle cx='374' cy='223' r='0.9' fill-opacity='0.60'/%3E%3Ccircle cx='196' cy='309' r='0.9' fill-opacity='0.82'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  animation: universo-flota 30s ease-in-out infinite alternate;
+  will-change: transform;
+  opacity: 0.5;
+}
+
+@keyframes universo-flota {
+  from { transform: translate3d(-4%, -3%, 0); }
+  to   { transform: translate3d(4%, 3%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
+}
+
+
+/* ===== Guía de refinamiento visual: paleta corporativa ===== */
+:root {
+  --bg: #0b0d12;
+  --text: #f1f3f8;
+  --muted: #a7adbd;
+  --turquesa: #35d6c0;
+  --cian: #22c8e8;
+  --morado: #241631;
+  --teal-bg: #10383b;
+  --magenta: #d85aa8;
+  --card: #10131a;
+  --border: rgba(53, 214, 192, 0.18);
+  --grad-brand: linear-gradient(100deg, #35d6c0, #22c8e8);
+  --grad-cta: linear-gradient(100deg, #b77af5 0%, #22c8e8 100%);
+  --grad-title: linear-gradient(90deg, #35d6c0, #22c8e8);
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 0% 40%, rgba(36, 22, 49, 0.55), transparent 55%),
+    radial-gradient(ellipse at 100% 60%, rgba(16, 56, 59, 0.55), transparent 55%),
+    var(--bg);
+}
+
+/* Degradados ambientales más discretos */
+body::before { opacity: 0.28 !important; }
+
+.hero { background: none; }
+
+/* Logo: marco turquesa → cian, sin competir */
+.logo-frame { background: var(--grad-brand); box-shadow: 0 0 36px rgba(53, 214, 192, 0.12); }
+
+/* Títulos de sección y de tarjetas en turquesa */
+.grad-text,
+.grid h3,
+.hz-id .title,
+.hz-mid h2 {
+  background: var(--grad-title);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Tarjetas: fondo #10131A, borde turquesa suave, hover discreto */
+.grid li,
+.card,
+.hz-card,
+.contact-form,
+.hz-areas li {
+  background-color: var(--card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: border-color .25s ease, box-shadow .25s ease;
+}
+.grid li:hover,
+.hz-areas li:hover,
+.hz-card:hover {
+  border-color: rgba(53, 214, 192, 0.45);
+  box-shadow: 0 0 22px rgba(53, 214, 192, 0.08);
+}
+.hz-areas li { border-color: #292d38; }
+.hz-areas b { color: var(--text); }
+.hz-areas span { color: var(--muted); }
+
+/* Botón principal */
+.cta {
+  background: var(--grad-cta);
+  color: #0b0d12;
+  transition: filter .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.cta:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(34, 200, 232, 0.18);
+}
+
+/* Botones secundarios: texto turquesa, borde cian, hover de fondo cian suave */
+.links a,
+.hz-links a {
+  color: var(--turquesa);
+  border-color: var(--cian);
+  background: transparent;
+}
+.links a:hover,
+.hz-links a:hover { background: rgba(34, 200, 232, 0.10); }
+
+/* Enlaces de contacto */
+.mail { color: var(--turquesa); }
+
+/* Foco de formularios en cian */
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--cian);
+  box-shadow: 0 0 0 3px rgba(34, 200, 232, 0.14);
+}
+
+/* Chips neutros */
+.chips li { color: var(--muted); border-color: rgba(255, 255, 255, 0.1); }
+
+/* Magenta solo como acento puntual */
+.avatar { border-color: rgba(216, 90, 168, 0.55); }
+.card-info .role,
+.hz-id .role { color: var(--turquesa); }
+
+/* Marco del logo: morado → blanco */
+.logo-frame {
+  background: linear-gradient(135deg, #b77af5, #f1f3f8);
+  box-shadow: 0 0 36px rgba(183, 122, 245, 0.22);
+}
+
+/* Marco del logo: cian → amarillo */
+.logo-frame {
+  background: linear-gradient(135deg, #22c8e8, #f5d742);
+  box-shadow: 0 0 36px rgba(34, 200, 232, 0.18);
+}
+
+/* Tarjetas de servicios: cuatro en fila, sin numeración */
+.svc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; list-style: none; margin: 0 auto; padding: 0; max-width: 72rem; }
+.svc { display: flex; flex-direction: column; padding: 1.5rem 1.3rem 1.4rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--card); transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
+.svc:hover { border-color: rgba(53, 214, 192, 0.45); box-shadow: 0 0 22px rgba(53, 214, 192, 0.08); transform: translateY(-2px); }
+.svc-kicker { margin: 0 0 .45rem; font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; color: var(--cyan); }
+.svc h3 { margin: 0 0 .75rem; font-size: 1.08rem; font-weight: 600; line-height: 1.3; background: var(--grad-title); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.svc-body { margin: 0; color: var(--muted); font-size: .95rem; line-height: 1.65; }
+@media (max-width: 1100px) { .svc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .svc-grid { grid-template-columns: 1fr; } .svc { padding: 1.3rem 1.2rem; } }
+
